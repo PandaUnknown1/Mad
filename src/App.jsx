@@ -139,7 +139,7 @@ export default function App() {
   if (screen === 'status') {
     return (
       <div className="min-h-screen bg-white p-6 text-center">
-        <h1 className="text-3xl font-bold text-purple-700 mb-6">❤️ Status Overview ❤️</h1>
+        <h1 className="text-3xl font-bold text-purple-700 mb-6">  Status Overview </h1>
 
         {USERS.map(({ key, label }) => (
           <div key={key} className="mb-6 border-t border-gray-300 pt-4">

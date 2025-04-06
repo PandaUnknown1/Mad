@@ -127,18 +127,39 @@ const handleStatusView = () => {
   }
 
   if (screen === 'status') {
-    return (
-      <div className="min-h-screen bg-white p-6 text-center">
-        <h1 className="text-3xl font-bold text-purple-700 mb-6">❤️ Status Overview ❤️</h1>
+  return (
+    <div className="min-h-screen bg-white p-6 text-center">
+      <h1 className="text-3xl font-bold text-purple-700 mb-6"> Status Overview </h1>
 
-        {USERS.map((u) => (
-          <div key={u} className="mb-6 border-t border-gray-300 pt-4">
-            <h2 className="text-xl font-semibold capitalize text-pink-700">{u}</h2>
-            <p><strong>Mad:</strong> {statusData[u]?.mad ? 'Yes 😡' : 'No 😊'}</p>
-            <p><strong>Reason:</strong> {statusData[u]?.reason || 'None'}</p>
-            <p><strong>Suggestion:</strong> {statusData[u]?.suggestion || 'None'}</p>
-          </div>
-        ))}
+      {[
+        { key: 'you', label: 'Krishraj 🐼' },
+        { key: 'her', label: 'Asfia 🐱' },
+      ].map(({ key, label }) => (
+        <div key={key} className="mb-6 border-t border-gray-300 pt-4">
+          <h2 className="text-xl font-semibold text-pink-700">{label}</h2>
+          <p><strong>Mad:</strong> {statusData[key]?.mad ? 'Yes 😡' : 'No 😊'}</p>
+          <p><strong>Reason:</strong> {statusData[key]?.reason || 'None'}</p>
+          <p><strong>Suggestion:</strong> {statusData[key]?.suggestion || 'None'}</p>
+        </div>
+      ))}
+
+      <button
+        className="mt-6 bg-red-500 text-white px-4 py-2 rounded"
+        onClick={handleReset}
+      >
+        Reset Status
+      </button>
+
+      <button
+        className="mt-2 bg-gray-400 text-white px-4 py-2 rounded ml-4"
+        onClick={() => setScreen('home')}
+      >
+        Back to Home
+      </button>
+    </div>
+  );
+}
+
 
         <button className="mt-6 bg-red-500 text-white px-4 py-2 rounded" onClick={handleReset}>
           Reset Status

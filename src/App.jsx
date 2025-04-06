@@ -12,6 +12,13 @@ export default function App() {
   const [suggestion, setSuggestion] = useState('');
   const [statusData, setStatusData] = useState({});
 
+  // Prompt modal state
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [promptType, setPromptType] = useState(null);
+  const [promptUser, setPromptUser] = useState('');
+  const [promptInput, setPromptInput] = useState('');
+  const [onPromptSubmit, setOnPromptSubmit] = useState(() => () => {});
+
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'status', 'global'), (docSnap) => {
       if (docSnap.exists()) {
@@ -21,25 +28,39 @@ export default function App() {
     return () => unsub();
   }, []);
 
+  const showPasswordPrompt = (type, user, callback) => {
+    setPromptType(type);
+    setPromptUser(user);
+    setPromptInput('');
+    setOnPromptSubmit(() => callback);
+    setShowPrompt(true);
+  };
+
   const handleLogin = async (user) => {
     const passwordRef = doc(db, 'passwords', user);
     const docSnap = await getDoc(passwordRef);
 
     if (!docSnap.exists()) {
-      const newPass = prompt(`Set a password for ${user}`);
-      if (newPass) {
-        await setDoc(passwordRef, { password: newPass });
-        alert('Password set!');
-      } else return;
+      showPasswordPrompt('set', user, async (input) => {
+        if (input) {
+          await setDoc(passwordRef, { password: input });
+          alert('Password set!');
+          continueLogin(user);
+        }
+      });
     } else {
-      const input = prompt(`Enter password for ${user}`);
-      const savedPassword = docSnap.data().password;
-      if (input !== savedPassword) {
-        alert('Wrong password!');
-        return;
-      }
+      showPasswordPrompt('enter', user, async (input) => {
+        const savedPassword = docSnap.data().password;
+        if (input === savedPassword) {
+          continueLogin(user);
+        } else {
+          alert('Wrong password!');
+        }
+      });
     }
+  };
 
+  const continueLogin = (user) => {
     setCurrentUser(user);
     const userData = statusData[user] || { mad: false, reason: '', suggestion: '', madSince: null };
     setMad(userData.mad);
@@ -74,19 +95,22 @@ export default function App() {
     const docSnap = await getDoc(passwordRef);
 
     if (!docSnap.exists()) {
-      const newPassword = prompt('Set a password for the status page:');
-      if (newPassword) {
-        await setDoc(passwordRef, { password: newPassword });
-        alert('Password set! You can now access the status page.');
-        setScreen('status');
-      }
+      showPasswordPrompt('set', 'status page', async (input) => {
+        if (input) {
+          await setDoc(passwordRef, { password: input });
+          alert('Password set! You can now access the status page.');
+          setScreen('status');
+        }
+      });
     } else {
-      const input = prompt('Enter status page password:');
-      if (input === docSnap.data().password) {
-        setScreen('status');
-      } else {
-        alert('Wrong password!');
-      }
+      showPasswordPrompt('enter', 'status page', async (input) => {
+        const savedPassword = docSnap.data().password;
+        if (input === savedPassword) {
+          setScreen('status');
+        } else {
+          alert('Wrong password!');
+        }
+      });
     }
   };
 
@@ -121,6 +145,39 @@ export default function App() {
         <button className="bg-pink-500 text-white px-6 py-3 rounded-full" onClick={() => handleLogin('you')}>Krishraj 🐼</button>
         <button className="bg-pink-500 text-white px-6 py-3 rounded-full" onClick={() => handleLogin('her')}>Asfia 🐱</button>
         <button className="bg-purple-600 text-white px-6 py-3 rounded-full mt-8" onClick={handleStatusView}>View Status</button>
+
+        {/* Password Prompt Modal */}
+        {showPrompt && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow-md text-center max-w-sm w-full">
+              <h2 className="text-lg font-bold mb-4">
+                {promptType === 'set' ? `Set password for ${promptUser}` : `Enter password for ${promptUser}`}
+              </h2>
+              <input
+                type="password"
+                value={promptInput}
+                onChange={(e) => setPromptInput(e.target.value)}
+                className="border border-gray-300 p-2 rounded w-full mb-4"
+                placeholder="Enter password"
+              />
+              <button
+                className="bg-pink-500 text-white px-4 py-2 rounded mr-2"
+                onClick={() => {
+                  setShowPrompt(false);
+                  onPromptSubmit(promptInput);
+                }}
+              >
+                Submit
+              </button>
+              <button
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+                onClick={() => setShowPrompt(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

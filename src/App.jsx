@@ -14,13 +14,11 @@ export default function App() {
   const [suggestion, setSuggestion] = useState('');
   const [statusData, setStatusData] = useState({});
 
-  // Load saved data
   useEffect(() => {
     const savedStatus = JSON.parse(localStorage.getItem(STATUS_KEY)) || {};
     setStatusData(savedStatus);
   }, []);
 
-  // Save changes
   useEffect(() => {
     if (screen === 'user') {
       const updated = {
@@ -32,7 +30,7 @@ export default function App() {
     }
   }, [mad, reason, suggestion]);
 
-  const handleLogin = async (user) => {
+  const handleLogin = (user) => {
     const storedPassword = localStorage.getItem(`${user}-password`);
     if (!storedPassword) {
       const newPass = prompt(`Set a password for ${user}`);
@@ -58,7 +56,6 @@ export default function App() {
 
   const handleStatusView = () => {
     let storedPassword = localStorage.getItem('status-password');
-
     if (!storedPassword) {
       const newPassword = prompt('Set a password for the status page:');
       if (newPassword) {
@@ -76,14 +73,17 @@ export default function App() {
     }
   };
 
-  const handleReset = () => {
-    const cleared = {
+  const handleResetCurrentUser = () => {
+    const updated = {
       ...statusData,
-      you: { mad: false, reason: '', suggestion: '' },
-      her: { mad: false, reason: '', suggestion: '' },
+      [currentUser]: { mad: false, reason: '', suggestion: '' },
     };
-    localStorage.setItem(STATUS_KEY, JSON.stringify(cleared));
-    setStatusData(cleared);
+    localStorage.setItem(STATUS_KEY, JSON.stringify(updated));
+    setStatusData(updated);
+    setMad(false);
+    setReason('');
+    setSuggestion('');
+    alert('Your status has been reset!');
   };
 
   if (screen === 'home') {
@@ -123,9 +123,15 @@ export default function App() {
           className="w-full max-w-md h-24 p-2 border border-gray-300 rounded mb-4"
         />
 
-        <button className="mt-4 bg-green-500 text-white px-4 py-2 rounded" onClick={() => setScreen('home')}>
-          Save & Go Home
-        </button>
+        <div className="flex space-x-4 mt-4">
+          <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={() => setScreen('home')}>
+            Save & Go Home
+          </button>
+
+          <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={handleResetCurrentUser}>
+            Reset My Status
+          </button>
+        </div>
       </div>
     );
   }
@@ -133,7 +139,7 @@ export default function App() {
   if (screen === 'status') {
     return (
       <div className="min-h-screen bg-white p-6 text-center">
-        <h1 className="text-3xl font-bold text-purple-700 mb-6"> Status Overview </h1>
+        <h1 className="text-3xl font-bold text-purple-700 mb-6">❤️ Status Overview ❤️</h1>
 
         {USERS.map(({ key, label }) => (
           <div key={key} className="mb-6 border-t border-gray-300 pt-4">
@@ -144,11 +150,7 @@ export default function App() {
           </div>
         ))}
 
-        <button className="mt-6 bg-red-500 text-white px-4 py-2 rounded" onClick={handleReset}>
-          Reset Status
-        </button>
-
-        <button className="mt-2 bg-gray-400 text-white px-4 py-2 rounded ml-4" onClick={() => setScreen('home')}>
+        <button className="mt-4 bg-gray-400 text-white px-4 py-2 rounded" onClick={() => setScreen('home')}>
           Back to Home
         </button>
       </div>

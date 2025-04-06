@@ -53,14 +53,26 @@ export default function App() {
     setScreen('user');
   };
 
-  const handleStatusView = () => {
+const handleStatusView = () => {
+  let storedPassword = localStorage.getItem('status-password');
+
+  if (!storedPassword) {
+    const newPassword = prompt('Set a password for the status page:');
+    if (newPassword) {
+      localStorage.setItem('status-password', newPassword);
+      alert('Password set! You can now access the status page.');
+      setScreen('status');
+    }
+  } else {
     const input = prompt('Enter status page password:');
-    if (input === localStorage.getItem('Miloisacat')) {
+    if (input === storedPassword) {
       setScreen('status');
     } else {
       alert('Wrong password!');
     }
-  };
+  }
+};
+
 
   const handleReset = () => {
     const cleared = {

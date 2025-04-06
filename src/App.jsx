@@ -55,7 +55,7 @@ export default function App() {
 
   const handleStatusView = () => {
     const input = prompt('Enter status page password:');
-    if (input === localStorage.getItem('status-password')) {
+    if (input === localStorage.getItem('Miloisacat')) {
       setScreen('status');
     } else {
       alert('Wrong password!');

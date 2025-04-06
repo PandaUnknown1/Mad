@@ -75,7 +75,7 @@ export default function App() {
   if (screen === 'home') {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-pink-100 space-y-4">
-        <h1 className="text-4xl font-bold text-pink-700 mb-8">💕 How Are We Feeling? 💕</h1>
+        <h1 className="text-4xl font-bold text-pink-700 mb-8">How Are We Feeling? </h1>
         <button className="bg-pink-500 text-white px-6 py-3 rounded-full" onClick={() => handleLogin('you')}>You</button>
         <button className="bg-pink-500 text-white px-6 py-3 rounded-full" onClick={() => handleLogin('her')}>Her</button>
         <button className="bg-purple-600 text-white px-6 py-3 rounded-full mt-8" onClick={handleStatusView}>View Status</button>

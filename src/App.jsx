@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-const USERS = ['you', 'her'];
+const USERS = [
+  { key: 'you', label: 'Krishraj 🐼' },
+  { key: 'her', label: 'Asfia 🐱' },
+];
 const STATUS_KEY = 'mad-status';
 
 export default function App() {
@@ -53,26 +56,25 @@ export default function App() {
     setScreen('user');
   };
 
-const handleStatusView = () => {
-  let storedPassword = localStorage.getItem('status-password');
+  const handleStatusView = () => {
+    let storedPassword = localStorage.getItem('status-password');
 
-  if (!storedPassword) {
-    const newPassword = prompt('Set a password for the status page:');
-    if (newPassword) {
-      localStorage.setItem('status-password', newPassword);
-      alert('Password set! You can now access the status page.');
-      setScreen('status');
-    }
-  } else {
-    const input = prompt('Enter status page password:');
-    if (input === storedPassword) {
-      setScreen('status');
+    if (!storedPassword) {
+      const newPassword = prompt('Set a password for the status page:');
+      if (newPassword) {
+        localStorage.setItem('status-password', newPassword);
+        alert('Password set! You can now access the status page.');
+        setScreen('status');
+      }
     } else {
-      alert('Wrong password!');
+      const input = prompt('Enter status page password:');
+      if (input === storedPassword) {
+        setScreen('status');
+      } else {
+        alert('Wrong password!');
+      }
     }
-  }
-};
-
+  };
 
   const handleReset = () => {
     const cleared = {
@@ -87,7 +89,7 @@ const handleStatusView = () => {
   if (screen === 'home') {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-pink-100 space-y-4">
-        <h1 className="text-4xl font-bold text-pink-700 mb-8">How Are We Feeling? </h1>
+        <h1 className="text-4xl font-bold text-pink-700 mb-8">How Are We Feeling?</h1>
         <button className="bg-pink-500 text-white px-6 py-3 rounded-full" onClick={() => handleLogin('you')}>Krishraj 🐼</button>
         <button className="bg-pink-500 text-white px-6 py-3 rounded-full" onClick={() => handleLogin('her')}>Asfia 🐱</button>
         <button className="bg-purple-600 text-white px-6 py-3 rounded-full mt-8" onClick={handleStatusView}>View Status</button>
@@ -96,9 +98,11 @@ const handleStatusView = () => {
   }
 
   if (screen === 'user') {
+    const userLabel = USERS.find(u => u.key === currentUser)?.label || currentUser;
+
     return (
       <div className="min-h-screen bg-pink-50 flex flex-col items-center py-10 px-4">
-        <h2 className="text-2xl font-bold mb-4 capitalize">{currentUser}'s Mood</h2>
+        <h2 className="text-2xl font-bold mb-4">{userLabel}'s Mood</h2>
 
         <label className="flex items-center space-x-3 mb-4">
           <span className="text-lg">Are you mad?</span>
@@ -127,39 +131,18 @@ const handleStatusView = () => {
   }
 
   if (screen === 'status') {
-  return (
-    <div className="min-h-screen bg-white p-6 text-center">
-      <h1 className="text-3xl font-bold text-purple-700 mb-6"> Status Overview </h1>
+    return (
+      <div className="min-h-screen bg-white p-6 text-center">
+        <h1 className="text-3xl font-bold text-purple-700 mb-6"> Status Overview </h1>
 
-      {[
-        { key: 'you', label: 'Krishraj 🐼' },
-        { key: 'her', label: 'Asfia 🐱' },
-      ].map(({ key, label }) => (
-        <div key={key} className="mb-6 border-t border-gray-300 pt-4">
-          <h2 className="text-xl font-semibold text-pink-700">{label}</h2>
-          <p><strong>Mad:</strong> {statusData[key]?.mad ? 'Yes 😡' : 'No 😊'}</p>
-          <p><strong>Reason:</strong> {statusData[key]?.reason || 'None'}</p>
-          <p><strong>Suggestion:</strong> {statusData[key]?.suggestion || 'None'}</p>
-        </div>
-      ))}
-
-      <button
-        className="mt-6 bg-red-500 text-white px-4 py-2 rounded"
-        onClick={handleReset}
-      >
-        Reset Status
-      </button>
-
-      <button
-        className="mt-2 bg-gray-400 text-white px-4 py-2 rounded ml-4"
-        onClick={() => setScreen('home')}
-      >
-        Back to Home
-      </button>
-    </div>
-  );
-}
-
+        {USERS.map(({ key, label }) => (
+          <div key={key} className="mb-6 border-t border-gray-300 pt-4">
+            <h2 className="text-xl font-semibold text-pink-700">{label}</h2>
+            <p><strong>Mad:</strong> {statusData[key]?.mad ? 'Yes 😡' : 'No 😊'}</p>
+            <p><strong>Reason:</strong> {statusData[key]?.reason || 'None'}</p>
+            <p><strong>Suggestion:</strong> {statusData[key]?.suggestion || 'None'}</p>
+          </div>
+        ))}
 
         <button className="mt-6 bg-red-500 text-white px-4 py-2 rounded" onClick={handleReset}>
           Reset Status
